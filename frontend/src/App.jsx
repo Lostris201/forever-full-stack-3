@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route, createRoutesFromElements } from 'react-router-dom'
+import { Routes, Route, createRoutesFromElements, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Collection from './pages/Collection'
 import About from './pages/About'
@@ -20,11 +20,26 @@ import Verify from './pages/Verify'
 export const backendUrl = "http://localhost:5000" 
 
 const App = () => {
+  // Mevcut URL yolunu al
+  const location = useLocation();
+  const isVideoFeedPage = location.pathname === '/video-feed';
+
+  // VideoFeed sayfasında olup olmadığımıza göre kapsayıcı sınıf belirle
+  const containerClass = isVideoFeedPage 
+    ? 'video-feed-page'  // Video sayfasındayız, özel sınıf
+    : 'px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]';  // Normal sayfa
+
   return (
-    <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
+    <div className={containerClass}>
       <ToastContainer />
-      <Navbar />
-      <SearchBar />
+      {/* Navbar ve SearchBar sadece video sayfasında değilsek göster */}
+      {!isVideoFeedPage && (
+        <>
+          <Navbar />
+          <SearchBar />
+        </>
+      )}
+      
       <Routes future={{ v7_startTransition: true }}>
         <Route path='/' element={<Home />} />
         <Route path='/collection' element={<Collection />} />
@@ -38,7 +53,9 @@ const App = () => {
         <Route path='/verify' element={<Verify />} />
         <Route path='/video-feed' element={<VideoFeed />} />
       </Routes>
-      <Footer />
+      
+      {/* Footer sadece video sayfasında değilsek göster */}
+      {!isVideoFeedPage && <Footer />}
     </div>
   )
 }

@@ -2,6 +2,7 @@ import React from 'react'
 import Hero from '../components/Hero'
 import LatestCollection from '../components/LatestCollection'
 import BestSeller from '../components/BestSeller'
+import BestSellingProducts from '../components/BestSellingProducts'
 import OurPolicy from '../components/OurPolicy'
 import NewsletterBox from '../components/NewsletterBox'
 
@@ -16,10 +17,7 @@ const Home = () => {
 
       {/* Content Sections with Smooth Transitions */}
       <div className="space-y-20 py-10">
-        <div className="transform hover:scale-[1.02] transition-transform duration-500">
-          <LatestCollection />
-        </div>
-
+        {/* Videolar Bölümü */}
         <div className="relative">
           <div className="absolute inset-0 bg-gray-900/5 -skew-y-3 transform origin-top-right"></div>
           <div className="relative z-10">
@@ -27,10 +25,22 @@ const Home = () => {
           </div>
         </div>
 
+        {/* Çok Satanlar Bölümü */}
+        <div className="transform hover:scale-[1.01] transition-transform duration-500">
+          <BestSellingProducts />
+        </div>
+
+        {/* Yeni Gelenler (Kategoriler) Bölümü */}
+        <div className="transform hover:scale-[1.01] transition-transform duration-500">
+          <LatestCollection />
+        </div>
+
+        {/* Politikalar Bölümü */}
         <div className="bg-white py-16">
           <OurPolicy />
         </div>
 
+        {/* Bülten Aboneliği Bölümü */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-50"></div>
           <div className="relative z-10">

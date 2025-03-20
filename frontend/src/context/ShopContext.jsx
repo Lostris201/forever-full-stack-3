@@ -7,7 +7,7 @@ export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
 
-    const currency = '$';
+    const currency = '₺';
     const delivery_fee = 10;
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [search, setSearch] = useState('');
@@ -19,39 +19,35 @@ const ShopContextProvider = (props) => {
 
 
     const addToCart = async (itemId, size) => {
-
-        if (!size) {
-            toast.error('Select Product Size');
-            return;
-        }
-
+        // Size parametresi gelmezse "standart" olarak ayarla
+        const sizeToUse = size || "standart";
+        
         let cartData = structuredClone(cartItems);
 
         if (cartData[itemId]) {
-            if (cartData[itemId][size]) {
-                cartData[itemId][size] += 1;
+            if (cartData[itemId][sizeToUse]) {
+                cartData[itemId][sizeToUse] += 1;
             }
             else {
-                cartData[itemId][size] = 1;
+                cartData[itemId][sizeToUse] = 1;
             }
         }
         else {
             cartData[itemId] = {};
-            cartData[itemId][size] = 1;
+            cartData[itemId][sizeToUse] = 1;
         }
         setCartItems(cartData);
+        
+        toast.success('Ürün sepete eklendi');
 
         if (token) {
             try {
-
-                await axios.post(backendUrl + '/api/cart/add', { itemId, size }, { headers: { token } })
-
+                await axios.post(backendUrl + '/api/cart/add', { itemId, size: sizeToUse }, { headers: { token } })
             } catch (error) {
                 console.log(error)
                 toast.error(error.message)
             }
         }
-
     }
 
     const getCartCount = () => {
@@ -110,18 +106,100 @@ const ShopContextProvider = (props) => {
 
     const getProductsData = async () => {
         try {
-
             const response = await axios.get(backendUrl + '/api/product/list')
             if (response.data.success) {
                 setProducts(response.data.products.reverse())
             } else {
                 toast.error(response.data.message)
+                // API başarısız olduğunda örnek ürünler göster
+                setExampleProducts();
             }
-
         } catch (error) {
             console.log(error)
-            toast.error(error.message)
+            toast.error("Ürünler yüklenirken bir hata oluştu")
+            // Hata durumunda örnek ürünler göster
+            setExampleProducts();
         }
+    }
+
+    // Örnek ürünler oluştur
+    const setExampleProducts = () => {
+        const exampleProducts = [
+            {
+                _id: "example1",
+                name: "Bambu Çatal Kaşık Seti",
+                description: "Doğal bambu malzemeden üretilmiş çevre dostu çatal kaşık seti.",
+                price: 150,
+                image: ["https://picsum.photos/400/400?random=1"],
+                category: "bambu",
+                subCategory: "mutfak",
+                sizes: ["standart"],
+                date: Date.now(),
+                bestseller: true
+            },
+            {
+                _id: "example2",
+                name: "Şef Bıçağı Set",
+                description: "Profesyonel mutfaklar için özel üretim şef bıçağı seti.",
+                price: 450,
+                image: ["https://picsum.photos/400/400?random=2"],
+                category: "bıçak",
+                subCategory: "mutfak",
+                sizes: ["standart"],
+                date: Date.now(),
+                bestseller: true
+            },
+            {
+                _id: "example3",
+                name: "Kristal Cam Bardak",
+                description: "El yapımı kristal cam bardak seti.",
+                price: 320,
+                image: ["https://picsum.photos/400/400?random=3"],
+                category: "cam",
+                subCategory: "ev",
+                sizes: ["standart"],
+                date: Date.now(),
+                bestseller: true
+            },
+            {
+                _id: "example4",
+                name: "Paslanmaz Çelik Tencere",
+                description: "Yüksek kalite paslanmaz çelik tencere seti.",
+                price: 780,
+                image: ["https://picsum.photos/400/400?random=4"],
+                category: "mutfak",
+                subCategory: "ev",
+                sizes: ["standart"],
+                date: Date.now(),
+                bestseller: true
+            },
+            {
+                _id: "example5",
+                name: "Bambu Salata Kasesi",
+                description: "Doğal bambu salata kasesi.",
+                price: 210,
+                image: ["https://picsum.photos/400/400?random=5"],
+                category: "bambu",
+                subCategory: "mutfak",
+                sizes: ["standart"],
+                date: Date.now(),
+                bestseller: false
+            },
+            {
+                _id: "example6",
+                name: "Ekmek Bıçağı",
+                description: "Özel dişli ekmek bıçağı.",
+                price: 180,
+                image: ["https://picsum.photos/400/400?random=6"],
+                category: "bıçak",
+                subCategory: "mutfak",
+                sizes: ["standart"],
+                date: Date.now(),
+                bestseller: false
+            }
+        ];
+        
+        setProducts(exampleProducts);
     }
 
     const getUserCart = async ( token ) => {

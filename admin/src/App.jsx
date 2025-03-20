@@ -9,9 +9,10 @@ import Login from './components/Login'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AddVideo from './pages/AddVideo'
+import AddCategory from './pages/AddCategory'
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL
-export const currency = '$'
+export const currency = '₺'
 
 const App = () => {
 
@@ -37,6 +38,7 @@ const App = () => {
                 <Route path='/list' element={<List token={token} />} />
                 <Route path='/orders' element={<Orders token={token} />} />
                 <Route path='/addvideo' element={<AddVideo token={token} />} />
+                <Route path='/categories' element={<AddCategory token={token} />} />
               </Routes>
             </div>
           </div>
