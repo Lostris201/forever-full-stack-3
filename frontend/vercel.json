@@ -1,8 +1,22 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/"
-      }
-    ]
-  }
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.molinofrontend.vercel.app" }],
+      "destination": "https://molinoev.com",
+      "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "molinofrontend.vercel.app" }],
+      "destination": "https://molinoev.com",
+      "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.molinoev.com" }],
+      "destination": "https://molinoev.com",
+      "permanent": true
+    }
+  ]
+}
