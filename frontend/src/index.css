@@ -1,12 +1,68 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind CSS directives - these are valid in Tailwind projects despite IDE warnings */
+@tailwind base;      /* Injects Tailwind's base styles */
+@tailwind components; /* Injects Tailwind's component classes */
+@tailwind utilities; /* Injects Tailwind's utility classes */
 
+/* Custom component definitions using Tailwind's @layer directive */
 @layer components {
     .nav-link {
+        /* @apply directive composes Tailwind utility classes */
         @apply relative p-2 rounded-full hover:bg-gray-100 transition-colors duration-200;
+    }
+}
+
+@layer utilities {
+    .aspect-w-16 {
+        position: relative;
+        padding-bottom: calc(9 / 16 * 100%);
+    }
+    
+    .aspect-h-9 {
+        position: relative;
+    }
+    
+    .aspect-w-16 > *, .aspect-h-9 > * {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+    
+    /* Hide scrollbar but allow scrolling */
+    .hide-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+    
+    /* Line clamp utilities */
+    .line-clamp-1 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+    }
+    
+    .line-clamp-2 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+    
+    .line-clamp-3 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
     }
 }
 

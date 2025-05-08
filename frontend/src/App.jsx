@@ -15,6 +15,7 @@ import Login from './pages/Login'
 import PlaceOrder from './pages/PlaceOrder'
 import Orders from './pages/Orders'
 import VideoFeed from './pages/VideoFeed'
+import VideoPlayer from './pages/VideoPlayer'
 import Verify from './pages/Verify'
 import Profile from './pages/Profile'
 import { ShopContextProvider } from './context/ShopContext'
@@ -52,6 +53,7 @@ const App = () => {
           <Route path='/orders' element={<Orders />} />
           <Route path='/verify' element={<Verify />} />
           <Route path='/video-feed' element={<VideoFeed />} />
+          <Route path='/video/:videoId' element={<VideoPlayer />} />
           <Route path='/profile' element={<Profile />} />
         </Routes>
         

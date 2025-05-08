@@ -99,6 +99,19 @@ const VideoFeed = () => {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
                 const response = await axios.get(`${backendUrl}/api/video/list`);
                 
+                // WhatsApp videosu - her zaman ilk sırada gösterilecek
+                const whatsappVideo = {
+                    id: 'whatsapp-video',
+                    url: '/asset/WhatsApp Video 2025-05-08 at 12.42.11.mp4',
+                    username: '@featured',
+                    description: 'Özel koleksiyon ürünlerimiz 🌟 #yeni #özel',
+                    songName: 'Orijinal Ses - Özel Koleksiyon',
+                    userImage: 'https://picsum.photos/49/49',
+                    category: 'Featured',
+                    likes: 3542,
+                    comments: 156
+                };
+                
                 if (response.data.success) {
                     const videoData = response.data.videos.map(video => ({
                         id: video._id,
@@ -112,11 +125,13 @@ const VideoFeed = () => {
                         comments: Math.floor(Math.random() * 100)
                     }));
                     
-                    setVideos(videoData);
-                    setFilteredVideos(videoData);
+                    // WhatsApp videosu en başa ekleniyor
+                    setVideos([whatsappVideo, ...videoData]);
+                    setFilteredVideos([whatsappVideo, ...videoData]);
                 } else {
                     // Eğer API çağrısı başarısız olursa default videoları göster
                     const defaultVideos = [
+                        whatsappVideo, // WhatsApp videosu en başa ekleniyor
                         {
                             id: 1,
                             url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
@@ -423,7 +438,12 @@ const VideoFeed = () => {
                                     loop
                                     playsInline
                                     className="video-element"
-                                    onClick={togglePlay}
+                                    onClick={(e) => {
+                                        // Eğer video oynatılıyor/duraklatılıyorsa, o işlemi yap
+                                        if (e.target === e.currentTarget) {
+                                            togglePlay();
+                                        }
+                                    }}
                                 />
                                 
                                 {/* Video içeriği overlay */}
@@ -444,6 +464,20 @@ const VideoFeed = () => {
                                                 <p className="description">{video.description}</p>
                                             </div>
                                         </div>
+                                        
+                                        {/* Video açma butonu - tıklandığında video sayfasına yönlendirir */}
+                                        <button 
+                                            onClick={() => {
+                                                // Video ID bir URL ise, encode et
+                                                const videoIdParam = video.url.includes('http') 
+                                                    ? encodeURIComponent(video.url) 
+                                                    : video.id;
+                                                window.location.href = `/video/${videoIdParam}`;
+                                            }}
+                                            className="px-3 py-1.5 bg-blue-600 text-white rounded-full text-sm mt-2 hover:bg-blue-700 transition-all"
+                                        >
+                                            Videoyu Aç
+                                        </button>
                                         
                                         <div className="music-info">
                                             <FaMusic className="music-icon" />
