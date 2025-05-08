@@ -6,6 +6,8 @@ const videoSchema = new mongoose.Schema({
     videoUrl: { type: String, required: true },
     thumbnailUrl: { type: String },
     category: { type: String, required: true },
+    trending: { type: Boolean, default: false },
+    userId: { type: String, default: '' },
     date: { type: Number, required: true }
 })
 

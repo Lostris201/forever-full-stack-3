@@ -204,8 +204,12 @@ const allOrders = async (req,res) => {
 // User Order Data For Forntend
 const userOrders = async (req,res) => {
     try {
+        // req.body'den userId al veya req.userId kullan (requireAuth middleware'inden)
+        const userId = req.userId || req.body.userId;
         
-        const { userId } = req.body
+        if (!userId) {
+            return res.json({success: false, message: "Kullanıcı kimliği bulunamadı"});
+        }
 
         const orders = await orderModel.find({ userId })
         res.json({success:true,orders})

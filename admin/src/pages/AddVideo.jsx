@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { assets } from '../assets/assets'
 import axios from 'axios'
 import { backendUrl } from '../App'
 import { toast } from 'react-toastify'
-import { FaTrash } from 'react-icons/fa'
+import { FaTrash, FaStar, FaRegStar, FaEdit, FaPlus } from 'react-icons/fa'
 
 const AddVideo = ({ token }) => {
     const [video, setVideo] = useState(false)
@@ -11,8 +10,10 @@ const AddVideo = ({ token }) => {
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
     const [category, setCategory] = useState("Trending")
+    const [isTrending, setIsTrending] = useState(false)
     const [videos, setVideos] = useState([])
     const [loading, setLoading] = useState(false)
+    const [editingVideo, setEditingVideo] = useState(null)
 
     // Videoları getir
     const fetchVideos = async () => {
@@ -26,7 +27,7 @@ const AddVideo = ({ token }) => {
             }
         } catch (error) {
             console.error("Video yükleme hatası:", error)
-            toast.error("Videolar yüklenirken bir hata oluştu")
+            toast.error(error.response?.data?.message || "Videolar yüklenirken bir hata oluştu")
         } finally {
             setLoading(false)
         }
@@ -37,15 +38,69 @@ const AddVideo = ({ token }) => {
         fetchVideos()
     }, [])
 
+    // Düzenleme modunu ayarla
+    const handleEditMode = (video) => {
+        setEditingVideo(video)
+        setTitle(video.title)
+        setDescription(video.description)
+        setCategory(video.category)
+        setIsTrending(video.trending)
+        
+        // Sayfanın üstüne kaydır
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    // Düzenleme modunu iptal et
+    const cancelEdit = () => {
+        setEditingVideo(null)
+        setTitle("")
+        setDescription("")
+        setCategory("Trending")
+        setIsTrending(false)
+        setVideo(false)
+        setThumbnail(false)
+    }
+
     const onSubmitHandler = async (e) => {
         e.preventDefault()
 
+        // Düzenleme modunda mı kontrolü
+        if (editingVideo) {
+            try {
+                const response = await axios.post(
+                    backendUrl + "/api/video/update",
+                    {
+                        videoId: editingVideo._id,
+                        title,
+                        description,
+                        category,
+                        trending: isTrending
+                    },
+                    { headers: { token } }
+                )
+
+                if (response.data.success) {
+                    toast.success("Video başarıyla güncellendi")
+                    cancelEdit()
+                    fetchVideos()
+                } else {
+                    toast.error(response.data.message || "Video güncellenirken bir hata oluştu")
+                }
+            } catch (error) {
+                console.error('Video güncelleme hatası:', error)
+                toast.error(error.response?.data?.message || 'Video güncellenirken bir hata oluştu')
+            }
+            return
+        }
+
+        // Yeni video ekleme
         try {
             const formData = new FormData()
 
             formData.append("title", title)
             formData.append("description", description)
             formData.append("category", category)
+            formData.append("trending", isTrending)
 
             if (video) {
                 formData.append("video", video)
@@ -70,15 +125,16 @@ const AddVideo = ({ token }) => {
                 setVideo(false)
                 setThumbnail(false)
                 setCategory("Trending")
+                setIsTrending(false)
                 // Videoları yeniden yükle
                 fetchVideos()
             } else {
-                toast.error(response.data.message)
+                toast.error(response.data.message || "Video eklenirken bir hata oluştu")
             }
 
         } catch (error) {
-            console.log('Hata:', error)
-            toast.error(error.response?.data?.message || 'Video yüklenirken bir hata oluştu')
+            console.error('Video ekleme hatası:', error)
+            toast.error(error.response?.data?.message || 'Video eklenirken bir hata oluştu')
         }
     }
 
@@ -101,68 +157,65 @@ const AddVideo = ({ token }) => {
                 }
             } catch (error) {
                 console.error("Video silme hatası:", error)
-                toast.error("Video silinirken bir hata oluştu")
+                toast.error(error.response?.data?.message || "Video silinirken bir hata oluştu")
             }
         }
     }
 
-    return (
-        <div className='w-full'>
-            <h2 className='text-xl font-semibold mb-6'>Video Yönetimi</h2>
-            
-            {/* Video Ekleme Formu */}
-            <div className='bg-white p-6 rounded-lg shadow-sm mb-8'>
-                <h3 className='text-lg font-medium mb-4'>Yeni Video Ekle</h3>
-                <form onSubmit={onSubmitHandler} className='flex flex-col w-full items-start gap-3'>
-                    <div>
-                        <p className='mb-2'>Video ve Thumbnail Yükle</p>
-                        <div className='flex gap-4'>
-                            {/* Video upload alanı */}
-                            <label htmlFor="video" className='cursor-pointer'>
-                                <div className='w-40 h-40 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg overflow-hidden'>
-                                    {!video ? (
-                                        <img className='w-20 opacity-50' src={assets.upload_area} alt="Upload" />
-                                    ) : (
-                                        <video 
-                                            className='w-full h-full object-cover' 
-                                            src={URL.createObjectURL(video)}
-                                        />
-                                    )}
-                                </div>
-                                <p className='text-center mt-2 text-sm text-gray-600'>Video</p>
-                                <input
-                                    onChange={(e) => setVideo(e.target.files[0])}
-                                    type="file"
-                                    id="video"
-                                    accept="video/*"
-                                    hidden
-                                />
-                            </label>
+    // Trending durumunu değiştir
+    const handleToggleTrending = async (videoId, currentTrending) => {
+        try {
+            const response = await axios.post(
+                backendUrl + "/api/video/toggle-trending",
+                { videoId, trending: !currentTrending },
+                { headers: { token } }
+            )
 
-                            {/* Thumbnail upload alanı */}
-                            <label htmlFor="thumbnail" className='cursor-pointer'>
-                                <div className='w-40 h-40 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg overflow-hidden'>
-                                    {!thumbnail ? (
-                                        <img className='w-20 opacity-50' src={assets.upload_area} alt="Upload" />
-                                    ) : (
-                                        <img
-                                            className='w-full h-full object-cover'
-                                            src={URL.createObjectURL(thumbnail)}
-                                            alt="Thumbnail"
-                                        />
-                                    )}
-                                </div>
-                                <p className='text-center mt-2 text-sm text-gray-600'>Thumbnail (İsteğe bağlı)</p>
-                                <input
-                                    onChange={(e) => setThumbnail(e.target.files[0])}
-                                    type="file"
-                                    id="thumbnail"
-                                    accept="image/*"
-                                    hidden
-                                />
-                            </label>
+            if (response.data.success) {
+                toast.success(response.data.message)
+                // Videoları yeniden yükle
+                fetchVideos()
+            } else {
+                toast.error(response.data.message || "İşlem sırasında bir hata oluştu")
+            }
+        } catch (error) {
+            console.error("Trending değiştirme hatası:", error)
+            toast.error(error.response?.data?.message || "İşlem sırasında bir hata oluştu")
+        }
+    }
+
+    return (
+        <div className='flex flex-col gap-8'>
+            {/* Video Ekleme/Düzenleme Formu */}
+            <div className='bg-white p-6 rounded-lg shadow-sm'>
+                <h2 className='text-xl font-semibold mb-4'>
+                    {editingVideo ? 'Video Düzenle' : 'Yeni Video Ekle'}
+                </h2>
+                <form onSubmit={onSubmitHandler} className='flex flex-col gap-4'>
+                    {!editingVideo && (
+                        <div className='w-full'>
+                            <p className='mb-2'>Video Dosyası</p>
+                            <input
+                                onChange={(e) => setVideo(e.target.files[0])}
+                                className='w-full max-w-[500px]'
+                                type="file"
+                                accept="video/*"
+                                required
+                            />
                         </div>
-                    </div>
+                    )}
+
+                    {!editingVideo && (
+                        <div className='w-full'>
+                            <p className='mb-2'>Thumbnail (Opsiyonel)</p>
+                            <input
+                                onChange={(e) => setThumbnail(e.target.files[0])}
+                                className='w-full max-w-[500px]'
+                                type="file"
+                                accept="image/*"
+                            />
+                        </div>
+                    )}
 
                     <div className='w-full'>
                         <p className='mb-2'>Video Başlığı</p>
@@ -200,57 +253,104 @@ const AddVideo = ({ token }) => {
                         </select>
                     </div>
 
-                    <button
-                        type="submit"
-                        className='w-28 py-3 mt-4 bg-black text-white rounded hover:bg-gray-800 transition-colors'
-                    >
-                        EKLE
-                    </button>
+                    <div className='flex items-center gap-2 mt-2'>
+                        <input
+                            id="trending-checkbox"
+                            type="checkbox"
+                            checked={isTrending}
+                            onChange={() => setIsTrending(!isTrending)}
+                            className='w-4 h-4'
+                        />
+                        <label htmlFor="trending-checkbox" className='cursor-pointer text-sm'>
+                            Bu videoyu anasayfada trend olarak göster
+                        </label>
+                    </div>
+
+                    <div className='flex gap-3 mt-4'>
+                        <button
+                            type="submit"
+                            className='py-3 px-6 bg-black text-white rounded hover:bg-gray-800 transition-colors'
+                        >
+                            {editingVideo ? 'GÜNCELLE' : 'EKLE'}
+                        </button>
+
+                        {editingVideo && (
+                            <button
+                                type="button"
+                                onClick={cancelEdit}
+                                className='py-3 px-6 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors'
+                            >
+                                İPTAL
+                            </button>
+                        )}
+                    </div>
                 </form>
             </div>
-            
-            {/* Video Listesi ve Silme */}
+
+            {/* Video Listesi */}
             <div className='bg-white p-6 rounded-lg shadow-sm'>
-                <h3 className='text-lg font-medium mb-4'>Mevcut Videolar</h3>
+                <h2 className='text-xl font-semibold mb-4'>Video Listesi</h2>
+                <p className='text-sm text-gray-500 mb-4'>
+                    Trend olarak işaretlenen videolar anasayfada gösterilir. 
+                    İstediğiniz kadar videoyu trend olarak işaretleyebilirsiniz.
+                </p>
                 
                 {loading ? (
-                    <p>Videolar yükleniyor...</p>
-                ) : videos.length === 0 ? (
-                    <p>Henüz video eklenmemiş</p>
-                ) : (
+                    <div className="flex justify-center items-center h-32">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+                    </div>
+                ) : videos.length > 0 ? (
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                        {videos.map(video => (
-                            <div key={video._id} className='border rounded-lg overflow-hidden bg-gray-50'>
-                                <div className='h-40 bg-gray-200'>
-                                    {video.thumbnailUrl ? (
-                                        <img 
-                                            src={video.thumbnailUrl} 
-                                            alt={video.title} 
-                                            className='w-full h-full object-cover'
-                                        />
-                                    ) : (
-                                        <div className='w-full h-full flex items-center justify-center bg-gray-100 text-gray-400'>
-                                            Thumbnail Yok
-                                        </div>
-                                    )}
+                        {videos.map((video) => (
+                            <div key={video._id} className='border rounded-lg p-4'>
+                                <div className='aspect-video mb-4'>
+                                    <img 
+                                        src={video.thumbnailUrl || 'https://via.placeholder.com/300x200'} 
+                                        alt={video.title}
+                                        className='w-full h-full object-cover rounded'
+                                    />
                                 </div>
-                                <div className='p-3'>
-                                    <div className='flex justify-between items-start'>
-                                        <h4 className='font-medium text-gray-800'>{video.title}</h4>
+                                <h3 className='font-semibold mb-2'>{video.title}</h3>
+                                <p className='text-sm text-gray-600 mb-2 line-clamp-2'>{video.description}</p>
+                                <div className='flex justify-between items-center'>
+                                    <div className='flex items-center gap-2'>
+                                        <span className='text-sm text-gray-500'>{video.category}</span>
+                                        {video.trending && (
+                                            <span className='bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full'>
+                                                Trend
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className='flex items-center gap-2'>
+                                        <button 
+                                            onClick={() => handleEditMode(video)}
+                                            className='text-blue-500 hover:text-blue-700'
+                                            title='Videoyu düzenle'
+                                        >
+                                            <FaEdit />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleToggleTrending(video._id, video.trending)}
+                                            className={`${video.trending ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-700`}
+                                            title={video.trending ? 'Trendi kaldır' : 'Trend yap'}
+                                        >
+                                            {video.trending ? <FaStar /> : <FaRegStar />}
+                                        </button>
                                         <button 
                                             onClick={() => handleDeleteVideo(video._id)}
-                                            className='p-2 text-red-500 hover:bg-red-50 rounded-full'
+                                            className='text-red-500 hover:text-red-700'
+                                            title='Videoyu sil'
                                         >
-                                            <FaTrash size={16} />
+                                            <FaTrash />
                                         </button>
                                     </div>
-                                    <p className='text-sm text-gray-500 mt-1'>{video.category}</p>
-                                    <p className='text-xs text-gray-400 mt-2'>
-                                        {new Date(video.date).toLocaleDateString('tr-TR')}
-                                    </p>
                                 </div>
                             </div>
                         ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-8 text-gray-500">
+                        Henüz video bulunmamaktadır.
                     </div>
                 )}
             </div>

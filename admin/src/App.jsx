@@ -10,9 +10,26 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AddVideo from './pages/AddVideo'
 import AddCategory from './pages/AddCategory'
+import Dashboard from './pages/Dashboard'
+import Products from './pages/Products'
+import Users from './pages/Users'
+import LiveChatManager from './components/LiveChatManager'
+import PrivateRoute from './components/PrivateRoute'
+import Profile from './pages/Profile'
+import ProductDetail from './pages/ProductDetail'
+import Newsletter from './pages/Newsletter'
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL
+// Backend URL'ini doğru formatta ayarlamak için
+let backendUrlFromEnv = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+// URL'in /api ile bitip bitmediğini kontrol et
+if (backendUrlFromEnv.endsWith('/api')) {
+  backendUrlFromEnv = backendUrlFromEnv.slice(0, -4); // Son 4 karakteri (yani /api) kaldır
+}
+export const backendUrl = backendUrlFromEnv;
 export const currency = '₺'
+
+// Uygulama yüklenirken backend URL'ini loglayalım
+console.log('Backend URL:', backendUrl);
 
 const App = () => {
 
@@ -39,6 +56,13 @@ const App = () => {
                 <Route path='/orders' element={<Orders token={token} />} />
                 <Route path='/addvideo' element={<AddVideo token={token} />} />
                 <Route path='/categories' element={<AddCategory token={token} />} />
+                <Route path='/dashboard' element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+                <Route path='/products' element={<Products token={token} />} />
+                <Route path='/products/:id' element={<ProductDetail token={token} />} />
+                <Route path='/profile' element={<Profile token={token} />} />
+                <Route path='/users' element={<PrivateRoute><Users /></PrivateRoute>} />
+                <Route path='/live-chat' element={<PrivateRoute><LiveChatManager token={token} /></PrivateRoute>} />
+                <Route path='/newsletter' element={<PrivateRoute><Newsletter token={token} /></PrivateRoute>} />
               </Routes>
             </div>
           </div>

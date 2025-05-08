@@ -1,39 +1,40 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { assets } from '../assets/assets'
+import { Link, useLocation } from 'react-router-dom'
+import { FaHome, FaBox, FaShoppingCart, FaUsers, FaImages, FaComments, FaVideo, FaTags, FaEnvelope } from 'react-icons/fa'
 
 const Sidebar = () => {
+  const location = useLocation();
+
+  const menuItems = [
+    { path: '/dashboard', icon: <FaHome />, label: 'Dashboard' },
+    { path: '/products', icon: <FaBox />, label: 'Ürünler' },
+    { path: '/addvideo', icon: <FaVideo />, label: 'Videolar' },
+    { path: '/categories', icon: <FaTags />, label: 'Kategoriler' },
+    { path: '/orders', icon: <FaShoppingCart />, label: 'Siparişler' },
+    { path: '/users', icon: <FaUsers />, label: 'Kullanıcılar' },
+    { path: '/newsletter', icon: <FaEnvelope />, label: 'Bülten' },
+    { path: '/live-chat', icon: <FaComments />, label: 'Canlı Destek' },
+  ];
+
   return (
-    <div className='w-[18%] min-h-screen border-r-2'>
-        <div className='flex flex-col gap-4 pt-6 pl-[20%] text-[15px]'>
-
-            <NavLink className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l' to="/add">
-                <img className='w-5 h-5' src={assets.add_icon} alt="" />
-                <p className='hidden md:block'>Ürün Ekle</p>
-            </NavLink>
-
-            <NavLink className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l' to="/list">
-                <img className='w-5 h-5' src={assets.order_icon} alt="" />
-                <p className='hidden md:block'>Ürünleri Lİstele</p>
-            </NavLink>
-
-            <NavLink className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l' to="/categories">
-                <img className='w-5 h-5' src={assets.add_icon} alt="" />
-                <p className='hidden md:block'>Kategoriler</p>
-            </NavLink>
-
-            <NavLink className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l' to="/orders">
-                <img className='w-5 h-5' src={assets.order_icon} alt="" />
-                <p className='hidden md:block'>Siparişler</p>
-            </NavLink>
-
-            <NavLink className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l' to="/addvideo">
-                <img className='w-5 h-5' src={assets.order_icon} alt="" />
-                <p className='hidden md:block'>Video</p>
-            </NavLink>
-
-        </div>
-
+    <div className="bg-gray-800 text-white w-64 min-h-screen p-4">
+      <div className="text-xl font-bold mb-8">Admin Panel</div>
+      <nav>
+        {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`flex items-center gap-3 p-3 rounded-lg mb-2 transition-colors ${
+              location.pathname === item.path
+                ? 'bg-blue-600'
+                : 'hover:bg-gray-700'
+            }`}
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </Link>
+        ))}
+      </nav>
     </div>
   )
 }

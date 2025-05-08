@@ -36,73 +36,76 @@ const LatestCollection = () => {
     }, [products]);
 
     return (
-        <div className='my-10'>
-            {/* Bambu Section */}
-            <div className='text-center py-8 text-3xl'>
-                <Title text1={'Trend'} text2={'Bambular'} />
-                <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the.
-                </p>
-            </div>
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
-                {latestProducts.bambu.length > 0 ? (
-                    latestProducts.bambu.map((item, index) => (
-                        <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
-                    ))
-                ) : (
-                    <p className='col-span-full text-center text-gray-600'>Henüz bambu ürünü yok.</p>
-                )}
-            </div>
+        <div className="my-10 container mx-auto px-4 rounded-2xl bg-gray-900 shadow-2xl relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-gray-800 opacity-80 pointer-events-none rounded-2xl"></div>
+            <div className="relative z-10 py-6">
+                {/* Bambu Section */}
+                <div className='text-center py-8 text-3xl'>
+                    <Title text1={'Trend'} text2={'Bambular'} />
+                    <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
+                        Doğal ve uzun ömürlü bambu ürünleri
+                    </p>
+                </div>
+                <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
+                    {latestProducts.bambu.length > 0 ? (
+                        latestProducts.bambu.map((item, index) => (
+                            <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
+                        ))
+                    ) : (
+                        <p className='col-span-full text-center text-gray-600'>Henüz bambu ürünü yok.</p>
+                    )}
+                </div>
 
-            {/* Bıçak Section */}
-            <div className='text-center py-8 text-3xl'>
-                <Title text1={'Trend'} text2={'Bıçaklar'} />
-                <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the.
-                </p>
-            </div>
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
-                {latestProducts.bıçak.length > 0 ? (
-                    latestProducts.bıçak.map((item, index) => (
-                        <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
-                    ))
-                ) : (
-                    <p className='col-span-full text-center text-gray-600'>Henüz bıçak ürünü yok.</p>
-                )}
-            </div>
+                {/* Bıçak Section */}
+                <div className='text-center py-8 text-3xl'>
+                    <Title text1={'Trend'} text2={'Bıçaklar'} />
+                    <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
+                        Profesyonel şeflerin tercih ettiği kaliteli bıçaklar
+                    </p>
+                </div>
+                <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
+                    {latestProducts.bıçak.length > 0 ? (
+                        latestProducts.bıçak.map((item, index) => (
+                            <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
+                        ))
+                    ) : (
+                        <p className='col-span-full text-center text-gray-600'>Henüz bıçak ürünü yok.</p>
+                    )}
+                </div>
 
-            {/* Cam Section */}
-            <div className='text-center py-8 text-3xl'>
-                <Title text1={'Trend'} text2={'Camlar'} />
-                <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the.
-                </p>
-            </div>
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
-                {latestProducts.cam.length > 0 ? (
-                    latestProducts.cam.map((item, index) => (
-                        <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
-                    ))
-                ) : (
-                    <p className='col-span-full text-center text-gray-600'>Henüz cam ürünü yok.</p>
-                )}
-            </div>
+                {/* Cam Section */}
+                <div className='text-center py-8 text-3xl'>
+                    <Title text1={'Trend'} text2={'Camlar'} />
+                    <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
+                        Zarif cam ürünleri
+                    </p>
+                </div>
+                <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
+                    {latestProducts.cam.length > 0 ? (
+                        latestProducts.cam.map((item, index) => (
+                            <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
+                        ))
+                    ) : (
+                        <p className='col-span-full text-center text-gray-600'>Henüz cam ürünü yok.</p>
+                    )}
+                </div>
 
-            {/* Mutfak Section */}
-            <div className='text-center py-8 text-3xl'>
-                <Title text1={'Trend'} text2={'Mutfak Eşyaları'} />
-                <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the.
-                </p>
-            </div>
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
-                {latestProducts.mutfak.length > 0 ? (
-                    latestProducts.mutfak.map((item, index) => (
-                        <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
-                    ))
-                ) : (
-                    <p className='col-span-full text-center text-gray-600'>Henüz mutfak ürünü yok.</p>
-                )}
+                {/* Mutfak Section */}
+                <div className='text-center py-8 text-3xl'>
+                    <Title text1={'Trend'} text2={'Mutfak Eşyaları'} />
+                    <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
+                        Modern ve fonksiyonel mutfak gereçleri
+                    </p>
+                </div>
+                <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
+                    {latestProducts.mutfak.length > 0 ? (
+                        latestProducts.mutfak.map((item, index) => (
+                            <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
+                        ))
+                    ) : (
+                        <p className='col-span-full text-center text-gray-600'>Henüz mutfak ürünü yok.</p>
+                    )}
+                </div>
             </div>
         </div>
     )

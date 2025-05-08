@@ -1,25 +1,23 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useContext } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios'
 
-export const ShopContext = createContext();
+export const ShopContext = createContext(null);
 
-const ShopContextProvider = (props) => {
-
+export const ShopContextProvider = (props) => {
     const currency = '₺';
     const delivery_fee = 10;
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
+    const backendUrl = "http://localhost:4000";
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState({});
     const [products, setProducts] = useState([]);
-    const [token, setToken] = useState('')
+    const [token, setToken] = useState(localStorage.getItem('token') || '');
     const navigate = useNavigate();
-
+    const [totalAmount, setTotalAmount] = useState(0);
 
     const addToCart = async (itemId, size) => {
-        // Size parametresi gelmezse "standart" olarak ayarla
         const sizeToUse = size || "standart";
         
         let cartData = structuredClone(cartItems);
@@ -42,7 +40,7 @@ const ShopContextProvider = (props) => {
 
         if (token) {
             try {
-                await axios.post(backendUrl + '/api/cart/add', { itemId, size: sizeToUse }, { headers: { token } })
+                await axios.post(`${backendUrl}/api/cart/add`, { itemId, size: sizeToUse }, { headers: { token } })
             } catch (error) {
                 console.log(error)
                 toast.error(error.message)
@@ -67,7 +65,6 @@ const ShopContextProvider = (props) => {
     }
 
     const updateQuantity = async (itemId, size, quantity) => {
-
         let cartData = structuredClone(cartItems);
 
         cartData[itemId][size] = quantity;
@@ -76,15 +73,12 @@ const ShopContextProvider = (props) => {
 
         if (token) {
             try {
-
-                await axios.post(backendUrl + '/api/cart/update', { itemId, size, quantity }, { headers: { token } })
-
+                await axios.post(`${backendUrl}/api/cart/update`, { itemId, size, quantity }, { headers: { token } })
             } catch (error) {
                 console.log(error)
                 toast.error(error.message)
             }
         }
-
     }
 
     const getCartAmount = () => {
@@ -106,18 +100,16 @@ const ShopContextProvider = (props) => {
 
     const getProductsData = async () => {
         try {
-            const response = await axios.get(backendUrl + '/api/product/list')
+            const response = await axios.get(`${backendUrl}/api/product/list`)
             if (response.data.success) {
                 setProducts(response.data.products.reverse())
             } else {
                 toast.error(response.data.message)
-                // API başarısız olduğunda örnek ürünler göster
                 setExampleProducts();
             }
         } catch (error) {
             console.log(error)
             toast.error("Ürünler yüklenirken bir hata oluştu")
-            // Hata durumunda örnek ürünler göster
             setExampleProducts();
         }
     }
@@ -202,10 +194,9 @@ const ShopContextProvider = (props) => {
         setProducts(exampleProducts);
     }
 
-    const getUserCart = async ( token ) => {
+    const getUserCart = async (token) => {
         try {
-            
-            const response = await axios.post(backendUrl + '/api/cart/get',{},{headers:{token}})
+            const response = await axios.post(`${backendUrl}/api/cart/get`, {}, { headers: { token } })
             if (response.data.success) {
                 setCartItems(response.data.cartData)
             }
@@ -229,21 +220,30 @@ const ShopContextProvider = (props) => {
         }
     }, [token])
 
-    const value = {
+    const contextValue = {
         products, currency, delivery_fee,
         search, setSearch, showSearch, setShowSearch,
-        cartItems, addToCart,setCartItems,
+        cartItems, addToCart, setCartItems,
         getCartCount, updateQuantity,
         getCartAmount, navigate, backendUrl,
-        setToken, token
+        setToken, token,
+        totalAmount,
+        setTotalAmount
     }
 
     return (
-        <ShopContext.Provider value={value}>
+        <ShopContext.Provider value={contextValue}>
             {props.children}
         </ShopContext.Provider>
     )
-
 }
+
+export const useShop = () => {
+    const context = useContext(ShopContext);
+    if (!context) {
+        throw new Error('useShop must be used within a ShopContextProvider');
+    }
+    return context;
+};
 
 export default ShopContextProvider;
