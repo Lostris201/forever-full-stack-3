@@ -36,8 +36,7 @@ const LatestCollection = () => {
     }, [products]);
 
     return (
-        <div className="my-10 container mx-auto px-4 rounded-2xl bg-gray-900 shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-gray-800 opacity-80 pointer-events-none rounded-2xl"></div>
+        <div className="my-10 container mx-auto px-4 rounded-2xl bg-white shadow-2xl relative overflow-hidden">
             <div className="relative z-10 py-6">
                 {/* Bambu Section */}
                 <div className='text-center py-8 text-3xl'>
